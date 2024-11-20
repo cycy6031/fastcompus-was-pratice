@@ -7,12 +7,12 @@ public class RequestLine {
     private final String method;
     private final String urlPath;
 
-    private String queryString;
+    private QueryStrings queryStrings;
 
     public RequestLine(String method, String urlPath, String queryString) {
         this.method = method;
         this.urlPath = urlPath;
-        this.queryString = queryString;
+        this.queryStrings = new QueryStrings(queryString);
     }
 
     // GET /calculate?operand1=11&operator=*&operand2=22 HTTP/1.1
@@ -24,8 +24,20 @@ public class RequestLine {
         this.urlPath = urlPartTokens[0];
 
         if(urlPartTokens.length == 2) {
-            this.queryString = urlPartTokens[1];
+            this.queryStrings = new QueryStrings(urlPartTokens[1]);
         }
+    }
+
+    public boolean isGetRequest() {
+        return this.method.equals("GET");
+    }
+
+    public boolean matchPath() {
+        return this.urlPath.equals("/calculate");
+    }
+
+    public QueryStrings getQueryStrings() {
+        return queryStrings;
     }
 
     @Override
@@ -38,11 +50,12 @@ public class RequestLine {
         }
         RequestLine that = (RequestLine) o;
         return Objects.equals(method, that.method) && Objects.equals(urlPath,
-            that.urlPath) && Objects.equals(queryString, that.queryString);
+            that.urlPath) && Objects.equals(queryStrings, that.queryStrings);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(method, urlPath, queryString);
+        return Objects.hash(method, urlPath, queryStrings);
     }
+
 }
